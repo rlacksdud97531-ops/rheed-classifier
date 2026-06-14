@@ -6,7 +6,7 @@ rheed_peak.py — RHEED 가장 밝은 중심 peak(specular spot) 자동 검출.
 """
 import numpy as np
 import tensorflow as tf
-from scipy.ndimage import gaussian_filter, median_filter
+from scipy.ndimage import gaussian_filter, median_filter, white_tophat
 from scipy.optimize import curve_fit
 
 
@@ -30,14 +30,21 @@ def find_center_peak(img, smooth=3.0, win=20, search_region=None, skip_top=True)
     if g.ndim == 3:
         g = g.mean(axis=2)
     H, W = g.shape
-    sm = gaussian_filter(median_filter(g, size=3), smooth)   # median = hot pixel 제거, gaussian = 매끈하게
+    base = median_filter(g, size=3)                          # hot pixel 제거
+    # white top-hat: 넓고 흐린 glow를 빼고 컴팩트한 spot만 남김 -> argmax가 glow 대신 진짜 spot을 잡음
+    sm = gaussian_filter(white_tophat(base, size=max(15, int(0.025 * max(H, W)))), smooth)
 
     if search_region is None and skip_top:
-        try:    # shadow edge 아래로 검색 제한 -> 위쪽 반사/잔상 artifact 회피
+        # specular는 shadow edge 바로 아래 + 중앙. 아래쪽 깊은 glow / 좌우·하단 원형 테두리는 제외.
+        try:
             import rheed_crop
-            search_region = (int(rheed_crop.find_crop_row(g)), H, 0, W)
+            edge = int(rheed_crop.find_crop_row(g))
         except Exception:
-            pass
+            edge = 0
+        y0 = min(H - 1, edge + int(0.03 * H))                # shadow edge 살짝 아래 (edge artifact 회피)
+        y1 = max(y0 + 1, int(0.70 * H))                      # 아래 깊은 glow / 원형 하단 제외
+        mx = int(0.12 * W)                                   # 좌우 원형 테두리 제외
+        search_region = (y0, y1, mx, W - mx)
 
     # 검색범위 마스크 (옵션)
     if search_region is not None:

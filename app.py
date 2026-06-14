@@ -93,14 +93,14 @@ with tab_cls:
         st.bar_chart(pd.DataFrame({'확률': res['probs']}))
 
 with tab_peak:
-    # 가장 밝은 중심 peak(specular) 자동 검출 + ROI
-    peak = RP.find_center_peak(img)
-    vis = RP.draw_peak(img, peak)
-    pc1, pc2 = st.columns([3, 1])
-    with pc1:
-        st.image(vis, caption="center peak (red) + ROI (green)", use_container_width=True)
-    with pc2:
-        st.metric("center x", f"{peak['x']:.1f} px")
-        st.metric("center y", f"{peak['y']:.1f} px")
-        st.metric("sigma", f"{peak['sigma']:.1f} px")
-        st.caption(f"method: {peak['method']}")
+    # 자동 검출을 시작점으로 주고, 슬라이더로 specular 중심·ROI를 직접 보정 (반자동)
+    H, W = img.shape[:2]
+    auto = RP.find_center_peak(img)
+    st.caption("자동 검출이 시작점입니다 — 슬라이더로 specular 중심·ROI를 보정하세요.")
+    s1, s2, s3 = st.columns(3)
+    cx = s1.slider("center x", 0, W, int(np.clip(auto['x'], 0, W)))
+    cy = s2.slider("center y", 0, H, int(np.clip(auto['y'], 0, H)))
+    roi = s3.slider("ROI radius (px)", 10, 300, int(np.clip(5 * auto['sigma'], 20, 300)))
+    vis = RP.draw_peak(img, {'x': cx, 'y': cy, 'sigma': roi}, roi_k=1)
+    st.image(vis, caption=f"center = ({cx}, {cy}) · ROI ±{roi}px · auto guess: {auto['method']}",
+             use_container_width=True)
