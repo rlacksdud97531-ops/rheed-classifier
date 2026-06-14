@@ -11,6 +11,7 @@ import tensorflow as tf
 import streamlit as st
 import rheed_deploy as D
 import rheed_crop as RC
+import rheed_peak as RP
 
 st.set_page_config(page_title="RHEED 분류기", page_icon="🔬", layout="wide")
 
@@ -63,27 +64,43 @@ except Exception as ex:
     st.error(f"이미지를 읽을 수 없습니다: {ex}")
     st.stop()
 
-# V2 줌 크롭 (항상 적용)
-t, b, l, r = RC.zoom_box(img)
-fed = img[t:b, l:r]
+tab_cls, tab_peak = st.tabs(["🔬 Classification", "🎯 Center peak"])
 
-# 원본에 V2 줌 박스(빨강) 표시
-overlay = img.copy()
-for (y0, y1, x0, x1) in [(t, t + 3, l, r), (b - 3, b, l, r), (t, b, l, l + 3), (t, b, r - 3, r)]:
-    overlay[max(0, y0):max(0, y1), max(0, x0):max(0, x1), 0] = 255
-    overlay[max(0, y0):max(0, y1), max(0, x0):max(0, x1), 1] = 0
-    overlay[max(0, y0):max(0, y1), max(0, x0):max(0, x1), 2] = 0
+with tab_cls:
+    # V2 줌 크롭 (항상 적용)
+    t, b, l, r = RC.zoom_box(img)
+    fed = img[t:b, l:r]
 
-res = D.predict_frame(model, fed)
+    # 원본에 V2 줌 박스(빨강) 표시
+    overlay = img.copy()
+    for (y0, y1, x0, x1) in [(t, t + 3, l, r), (b - 3, b, l, r), (t, b, l, l + 3), (t, b, r - 3, r)]:
+        overlay[max(0, y0):max(0, y1), max(0, x0):max(0, x1), 0] = 255
+        overlay[max(0, y0):max(0, y1), max(0, x0):max(0, x1), 1] = 0
+        overlay[max(0, y0):max(0, y1), max(0, x0):max(0, x1), 2] = 0
 
-c1, c2, c3 = st.columns([1.1, 1.1, 1])
-with c1:
-    st.image(overlay, use_container_width=True)
-with c2:
-    st.image(fed, use_container_width=True)
-with c3:
-    top = max(res['probs'], key=res['probs'].get)        # 확률 최고 클래스
-    label = top if res['probs'][top] > 0.55 else "Unclear"  # 0.55 넘는 게 없으면 Unclear
-    st.subheader(label)
-    st.markdown("**Class probabilities**")
-    st.bar_chart(pd.DataFrame({'확률': res['probs']}))
+    res = D.predict_frame(model, fed)
+
+    c1, c2, c3 = st.columns([1.1, 1.1, 1])
+    with c1:
+        st.image(overlay, use_container_width=True)
+    with c2:
+        st.image(fed, use_container_width=True)
+    with c3:
+        top = max(res['probs'], key=res['probs'].get)        # 확률 최고 클래스
+        label = top if res['probs'][top] > 0.55 else "Unclear"  # 0.55 넘는 게 없으면 Unclear
+        st.subheader(label)
+        st.markdown("**Class probabilities**")
+        st.bar_chart(pd.DataFrame({'확률': res['probs']}))
+
+with tab_peak:
+    # 가장 밝은 중심 peak(specular) 자동 검출 + ROI
+    peak = RP.find_center_peak(img)
+    vis = RP.draw_peak(img, peak)
+    pc1, pc2 = st.columns([3, 1])
+    with pc1:
+        st.image(vis, caption="center peak (red) + ROI (green)", use_container_width=True)
+    with pc2:
+        st.metric("center x", f"{peak['x']:.1f} px")
+        st.metric("center y", f"{peak['y']:.1f} px")
+        st.metric("sigma", f"{peak['sigma']:.1f} px")
+        st.caption(f"method: {peak['method']}")
