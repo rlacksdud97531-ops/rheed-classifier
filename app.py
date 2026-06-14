@@ -86,11 +86,19 @@ with tab_cls:
     with c2:
         st.image(fed, use_container_width=True)
     with c3:
-        top = max(res['probs'], key=res['probs'].get)        # 확률 최고 클래스
-        label = top if res['probs'][top] > 0.55 else "Unclear"  # 0.55 넘는 게 없으면 Unclear
+        probs = res['probs']
+        top = max(probs, key=probs.get)                       # 확률 최고 클래스
+        # Safety-First: Mixed(전이/거칠어진 성장)는 놓치면 손해 -> Streaks/Spotty가
+        # 기준점(0.55)을 넘어도 Mixed가 0.20을 넘으면 Mixed로 분류한다.
+        if probs.get('Mixed', 0.0) > 0.20:
+            label = "Mixed"
+        elif probs[top] > 0.55:                               # 그 외엔 top이 0.55 넘으면 그 클래스
+            label = top
+        else:
+            label = "Unclear"                                 # 아무것도 확실치 않으면 Unclear
         st.subheader(label)
         st.markdown("**Class probabilities**")
-        st.bar_chart(pd.DataFrame({'확률': res['probs']}))
+        st.bar_chart(pd.DataFrame({'확률': probs}))
 
 with tab_peak:
     # streak 대칭성으로 중앙(00) streak를 자동 검출 -> 슬라이더로 보정 (반자동)
