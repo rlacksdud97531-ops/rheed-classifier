@@ -83,5 +83,5 @@ with c2:
     st.image(fed, use_container_width=True)
 with c3:
     st.metric(res['label'], f"{res['confidence']*100:.1f} %")
-    st.markdown("**클래스별 확률**")
+    st.markdown("**Class probabilities**")
     st.bar_chart(pd.DataFrame({'확률': res['probs']}))
