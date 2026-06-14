@@ -35,6 +35,16 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+with st.sidebar:
+    st.header("Classes")
+    st.markdown(
+        "- **Streaks** — smooth 2D layer-by-layer film (Frank–van der Merwe)\n"
+        "- **Spotty** — 3D islands / quantum dots (Volmer–Weber)\n"
+        "- **Mixed** — rough or transitional growth — needs attention"
+    )
+    st.divider()
+    st.markdown("📧 [rlacksdud97531@gmail.com](mailto:rlacksdud97531@gmail.com)")
+
 # 모델 로드 (없으면 안내)
 try:
     model = get_model()
