@@ -75,7 +75,6 @@ for (y0, y1, x0, x1) in [(t, t + 3, l, r), (b - 3, b, l, r), (t, b, l, l + 3), (
     overlay[max(0, y0):max(0, y1), max(0, x0):max(0, x1), 2] = 0
 
 res = D.predict_frame(model, fed)
-emoji, kind, desc = STATUS[res['label']]
 
 c1, c2, c3 = st.columns([1.1, 1.1, 1])
 with c1:
@@ -83,11 +82,6 @@ with c1:
 with c2:
     st.image(fed, caption="모델 입력 (V2 줌)", use_container_width=True)
 with c3:
-    getattr(st, kind)(f"{emoji}  **{res['label']}** — {desc}")
-    st.metric("확신도 (confidence)", f"{res['confidence']*100:.1f} %")
-    st.caption(f"action code = {res['code']}  ·  {res['message']}")
+    st.metric(res['label'], f"{res['confidence']*100:.1f} %")
     st.markdown("**클래스별 확률**")
     st.bar_chart(pd.DataFrame({'확률': res['probs']}))
-
-with st.expander("원시 출력 (raw JSON)"):
-    st.json({**res, 'crop': 'V2_zoom', 'crop_box(t,b,l,r)': [int(t), int(b), int(l), int(r)]})
