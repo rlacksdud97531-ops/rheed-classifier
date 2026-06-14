@@ -83,7 +83,7 @@ with c2:
     st.image(fed, use_container_width=True)
 with c3:
     top = max(res['probs'], key=res['probs'].get)        # 확률 최고 클래스
-    label = top if res['probs'][top] > 0.6 else "Unclear"  # 0.6 넘는 게 없으면 Unclear
+    label = top if res['probs'][top] > 0.55 else "Unclear"  # 0.55 넘는 게 없으면 Unclear
     st.subheader(label)
     st.markdown("**Class probabilities**")
     st.bar_chart(pd.DataFrame({'확률': res['probs']}))
