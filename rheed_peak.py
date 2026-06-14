@@ -46,14 +46,22 @@ def find_center_peak(img, smooth=3.0, win=20, search_region=None, skip_top=True)
         mx = int(0.12 * W)                                   # 좌우 원형 테두리 제외
         search_region = (y0, y1, mx, W - mx)
 
-    # 검색범위 마스크 (옵션)
-    if search_region is not None:
-        ys, ye, xs, xe = search_region
-        sub = sm[ys:ye, xs:xe]
-        dy, dx = np.unravel_index(np.argmax(sub), sub.shape)
-        y0, x0 = ys + dy, xs + dx
-    else:
-        y0, x0 = np.unravel_index(np.argmax(sm), sm.shape)
+    # 검색 영역 (없으면 전체)
+    if search_region is None:
+        search_region = (0, H, 0, W)
+    ys, ye, xs, xe = search_region
+    Y, X = np.mgrid[ys:ye, xs:xe]
+    bright = gaussian_filter(base, smooth)[ys:ye, xs:xe]      # 밝은 영역(glow 포함)
+    spot = sm[ys:ye, xs:xe]                                    # glow 제거한 spot 강조
+    # 1) 중앙 C = 밝은 영역(패턴)의 무게중심
+    ws = float(bright.sum()) + 1e-9
+    Cx = float((X * bright).sum() / ws)
+    Cy = float((Y * bright).sum() / ws)
+    # 2) C에서 가까울수록 가중 -> 중앙 근처 가장 밝은 spot 선택
+    sigma_d = 0.15 * W
+    score = spot * np.exp(-((X - Cx) ** 2 + (Y - Cy) ** 2) / (2 * sigma_d ** 2))
+    dy, dx = np.unravel_index(np.argmax(score), score.shape)
+    y0, x0 = ys + dy, xs + dx
 
     # window 잘라서 fit
     y1, y2 = max(0, y0 - win), min(H, y0 + win + 1)
@@ -90,7 +98,7 @@ def draw_peak(img, res, roi_k=5):
     g = img.astype(np.float32)
     if g.ndim == 3:
         g = g.mean(axis=2)
-    lo, hi = np.percentile(g, 1), np.percentile(g, 99.5)
+    lo, hi = np.percentile(g, 70), np.percentile(g, 99.8)   # 밝은 특징(spot) 위주 대비 (glow 눌러서 spot 보이게)
     vis = np.clip((g - lo) / (hi - lo + 1e-6) * 255, 0, 255).astype(np.uint8)
     vis = np.stack([vis, vis, vis], axis=-1)
     H, W = g.shape
