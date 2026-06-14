@@ -93,14 +93,18 @@ with tab_cls:
         st.bar_chart(pd.DataFrame({'확률': res['probs']}))
 
 with tab_peak:
-    # 자동 검출을 시작점으로 주고, 슬라이더로 specular 중심·ROI를 직접 보정 (반자동)
+    # streak 대칭성으로 중앙(00) streak를 자동 검출 -> 슬라이더로 보정 (반자동)
     H, W = img.shape[:2]
     auto = RP.find_center_peak(img)
-    st.caption("자동 검출이 시작점입니다 — 슬라이더로 specular 중심·ROI를 보정하세요.")
+    st.caption("Auto-detected from streak symmetry (middle streak = center). Adjust with sliders if needed.")
     s1, s2, s3 = st.columns(3)
     cx = s1.slider("center x", 0, W, int(np.clip(auto['x'], 0, W)))
     cy = s2.slider("center y", 0, H, int(np.clip(auto['y'], 0, H)))
     roi = s3.slider("ROI radius (px)", 10, 300, int(np.clip(5 * auto['sigma'], 20, 300)))
-    vis = RP.draw_peak(img, {'x': cx, 'y': cy, 'sigma': roi}, roi_k=1)
-    st.image(vis, caption=f"center = ({cx}, {cy}) · ROI ±{roi}px · auto guess: {auto['method']}",
-             use_container_width=True)
+    vis = RP.draw_peak(img, {'x': cx, 'y': cy, 'sigma': roi, 'streaks_x': auto['streaks_x']},
+                       roi_k=1, show_streaks=True)
+    st.image(vis, use_container_width=True)
+    info = f"center = ({cx}, {cy}) · ROI ±{roi}px · {auto['n_streaks']} streaks detected"
+    if auto['n_streaks'] >= 2 and np.isfinite(auto['spacing']):
+        info += f" · mean spacing ≈ {auto['spacing']:.0f} px"
+    st.caption(info)
