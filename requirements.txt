@@ -1,4 +1,4 @@
-tensorflow>=2.16
+tensorflow-cpu>=2.16
 scikit-learn
 pandas
 matplotlib
