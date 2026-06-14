@@ -1,5 +1,6 @@
 tensorflow-cpu>=2.16
 scikit-learn
+scipy
 pandas
 matplotlib
 seaborn
