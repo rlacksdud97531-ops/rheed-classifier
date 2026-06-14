@@ -1,0 +1,41 @@
+# ===== 데이터셋 (용량 큼 / 연구 데이터) =====
+balanced_dataset/
+zoom_dataset/
+dataset/
+raw/
+*.png
+*.jpg
+*.jpeg
+*.bmp
+*.tif
+*.tiff
+
+# ===== 학습된 모델 (GitHub 100MB 제한 초과) =====
+*.keras
+*.h5
+Models/
+results/
+
+# ===== 생성물 / 미리보기 =====
+crop_preview/
+zoom_preview/
+confusion_matrices_png/
+*.xlsx
+
+# ===== 논문 (저작권) =====
+*.pdf
+
+# ===== 파이썬 / 환경 =====
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# ===== 에디터 / 시스템 =====
+.claude/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+_*.py
