@@ -78,9 +78,9 @@ res = D.predict_frame(model, fed)
 
 c1, c2, c3 = st.columns([1.1, 1.1, 1])
 with c1:
-    st.image(overlay, caption="원본 + V2 줌 박스", use_container_width=True)
+    st.image(overlay, use_container_width=True)
 with c2:
-    st.image(fed, caption="모델 입력 (V2 줌)", use_container_width=True)
+    st.image(fed, use_container_width=True)
 with c3:
     st.metric(res['label'], f"{res['confidence']*100:.1f} %")
     st.markdown("**클래스별 확률**")
