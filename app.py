@@ -28,10 +28,10 @@ def get_model():
     return D.load_classifier()
 
 
-st.title("RHEED 패턴 분류기")
-# 파일 업로더의 "Limit 200MB per file • PNG, JPG" 안내 텍스트 숨기기
+st.title("RHEED Image Analysis")
+# 파일 업로더의 "200MB per file • PNG, JPG" 안내 블록 숨기기
 st.markdown(
-    "<style>[data-testid='stFileUploaderDropzoneInstructions'] small{display:none;}</style>",
+    "<style>[data-testid='stFileUploaderDropzoneInstructions']{display:none !important;}</style>",
     unsafe_allow_html=True,
 )
 
