@@ -29,8 +29,6 @@ def get_model():
 
 
 st.title("🔬 RHEED 패턴 분류기")
-st.caption(f"3-class (Streaks · Spotty · Mixed) · Safety-First 정책 "
-           f"(정상 판정 ≥ {D.CLEAN_CONF}, 문제 민감도 P(Mixed) ≥ {D.MIXED_SENS})")
 
 # 모델 로드 (없으면 안내)
 try:
@@ -41,7 +39,6 @@ except FileNotFoundError as e:
 
 up = st.file_uploader("RHEED 이미지 업로드 (PNG / JPG)", type=['png', 'jpg', 'jpeg'])
 if up is None:
-    st.info("이미지를 올리면 분류 결과가 나옵니다.")
     st.stop()
 
 # 디코드 (16-bit 안전) -> uint8 [0,255]
