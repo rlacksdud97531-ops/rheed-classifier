@@ -88,14 +88,18 @@ with tab_cls:
     with c3:
         probs = res['probs']
         top = max(probs, key=probs.get)                       # 확률 최고 클래스
-        # Safety-First: Mixed(전이/거칠어진 성장)는 놓치면 손해 -> Streaks/Spotty가
-        # 기준점(0.55)을 넘어도 Mixed가 0.20을 넘으면 Mixed로 분류한다.
-        if probs.get('Mixed', 0.0) > 0.20:
+        # 우선순위(Safety-First):
+        #  1) Spotty>=0.50 -> Spotty (확신 기준: 명확한 spotty는 약한 Mixed에 안 뒤집힘)
+        #  2) Mixed>0.20   -> Mixed  (전이/거칠어진 성장은 놓치면 손해 -> 민감하게)
+        #  3) top>0.55     -> 그 클래스, 아니면 Unclear
+        if probs.get('Spotty', 0.0) >= 0.50:
+            label = "Spotty"
+        elif probs.get('Mixed', 0.0) > 0.20:
             label = "Mixed"
-        elif probs[top] > 0.55:                               # 그 외엔 top이 0.55 넘으면 그 클래스
+        elif probs[top] > 0.55:
             label = top
         else:
-            label = "Unclear"                                 # 아무것도 확실치 않으면 Unclear
+            label = "Unclear"
         st.subheader(label)
         st.markdown("**Class probabilities**")
         st.bar_chart(pd.DataFrame({'확률': probs}))
