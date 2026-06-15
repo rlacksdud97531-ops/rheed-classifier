@@ -44,6 +44,15 @@ with st.sidebar:
         "- **Mixed** — rough or transitional growth — needs attention"
     )
     st.divider()
+    st.subheader("Decision rule")
+    st.markdown(
+        "1. **Streaks** — Streaks ≥ 0.873\n"
+        "2. **Spotty** — Spotty ≥ 0.55\n"
+        "3. **Mixed · Streak-dominant** — Streaks ≥ 0.79, Mixed ≥ 0.11, Spotty ≤ 0.085\n"
+        "4. **Mixed · Spotty-dominant** — Streaks ≤ 0.7191, Mixed ≥ 0.1827, Spotty ≥ 0.0983\n"
+        "5. **Unclear** — none of the above"
+    )
+    st.divider()
     st.markdown("📧 [rlacksdud97531@gmail.com](mailto:rlacksdud97531@gmail.com)")
 
 # 모델 로드 (없으면 안내)
@@ -87,17 +96,23 @@ with tab_cls:
         st.image(fed, use_container_width=True)
     with c3:
         probs = res['probs']
-        top = max(probs, key=probs.get)                       # 확률 최고 클래스
-        # 우선순위(Safety-First):
-        #  1) Spotty>=0.50 -> Spotty (확신 기준: 명확한 spotty는 약한 Mixed에 안 뒤집힘)
-        #  2) Mixed>0.20   -> Mixed  (전이/거칠어진 성장은 놓치면 손해 -> 민감하게)
-        #  3) top>0.55     -> 그 클래스, 아니면 Unclear
-        if probs.get('Spotty', 0.0) >= 0.50:
+        p_streak = probs.get('Streaks', 0.0)
+        p_spotty = probs.get('Spotty', 0.0)
+        p_mixed  = probs.get('Mixed', 0.0)
+        # 결정 규칙 (데이터 기반 경계):
+        #  1) Streaks                  : Streaks >= 0.873
+        #  2) Spotty                   : Spotty  >= 0.55
+        #  3) Mixed · Streak-dominant  : Streaks >= 0.79,   Mixed >= 0.11,   Spotty <= 0.085
+        #  4) Mixed · Spotty-dominant  : Streaks <= 0.7191, Mixed >= 0.1827, Spotty >= 0.0983
+        #  5) 넷 다 아니면 Unclear
+        if p_streak >= 0.873:
+            label = "Streaks"
+        elif p_spotty >= 0.55:
             label = "Spotty"
-        elif probs.get('Mixed', 0.0) > 0.20:
-            label = "Mixed"
-        elif probs[top] > 0.55:
-            label = top
+        elif p_streak >= 0.79 and p_mixed >= 0.11 and p_spotty <= 0.085:
+            label = "Mixed · Streak-dominant"
+        elif p_streak <= 0.7191 and p_mixed >= 0.1827 and p_spotty >= 0.0983:
+            label = "Mixed · Spotty-dominant"
         else:
             label = "Unclear"
         st.subheader(label)
