@@ -67,8 +67,8 @@ except Exception as ex:
 tab_cls, tab_peak = st.tabs(["🔬 Classification", "🎯 Center peak"])
 
 with tab_cls:
-    # V2 줌 크롭 (항상 적용)
-    t, b, l, r = RC.zoom_box(img)
+    # V2 줌 크롭 (band_h=0.525: 기본 0.60에서 밑 1/8 줄임 — 박스를 조금 더 타이트하게)
+    t, b, l, r = RC.zoom_box(img, band_h=0.525)
     fed = img[t:b, l:r]
 
     # 원본에 V2 줌 박스(빨강) 표시
