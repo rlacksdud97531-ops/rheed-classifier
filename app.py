@@ -48,7 +48,7 @@ with st.sidebar:
     st.markdown(
         "1. **Streaks** — Streaks ≥ 0.873\n"
         "2. **Spotty** — Spotty ≥ 0.55\n"
-        "3. **Mixed · Streak-dominant** — Streaks ≥ 0.79, Mixed ≥ 0.11, Spotty ≤ 0.085\n"
+        "3. **Mixed · Streak-dominant** — Streaks ≥ 0.79, Mixed ≥ 0.0893, Spotty ≤ 0.085\n"
         "4. **Mixed · Spotty-dominant** — Streaks ≤ 0.7191, Mixed ≥ 0.1827, Spotty ≥ 0.0983\n"
         "5. **Unclear** — none of the above"
     )
@@ -102,14 +102,14 @@ with tab_cls:
         # 결정 규칙 (데이터 기반 경계):
         #  1) Streaks                  : Streaks >= 0.873
         #  2) Spotty                   : Spotty  >= 0.55
-        #  3) Mixed · Streak-dominant  : Streaks >= 0.79,   Mixed >= 0.11,   Spotty <= 0.085
+        #  3) Mixed · Streak-dominant  : Streaks >= 0.79,   Mixed >= 0.0893, Spotty <= 0.085
         #  4) Mixed · Spotty-dominant  : Streaks <= 0.7191, Mixed >= 0.1827, Spotty >= 0.0983
         #  5) 넷 다 아니면 Unclear
         if p_streak >= 0.873:
             label = "Streaks"
         elif p_spotty >= 0.55:
             label = "Spotty"
-        elif p_streak >= 0.79 and p_mixed >= 0.11 and p_spotty <= 0.085:
+        elif p_streak >= 0.79 and p_mixed >= 0.0893 and p_spotty <= 0.085:
             label = "Mixed · Streak-dominant"
         elif p_streak <= 0.7191 and p_mixed >= 0.1827 and p_spotty >= 0.0983:
             label = "Mixed · Spotty-dominant"
