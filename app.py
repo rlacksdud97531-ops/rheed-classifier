@@ -57,7 +57,7 @@ with st.sidebar:
     st.markdown(
         "**Yes kikuchi line** if any of:\n"
         "- 0.75 < Streaks < 0.917, 0.0591 < Mixed ≤ 0.2, Spotty < 0.066\n"
-        "- 0.55 < Streaks < 0.56, 0.25 < Mixed < 0.2995, 0.143 < Spotty < 0.18\n"
+        "- 0.55 < Streaks < 0.56, 0.25 < Mixed < 0.2995, 0.142 < Spotty < 0.18\n"
         "- 0.954 < Streaks < 0.956, 0.0298 < Mixed < 0.03, 0.0151 < Spotty < 0.0153\n\n"
         "otherwise **No kikuchi line**"
     )
@@ -126,7 +126,7 @@ with tab_cls:
             label = "Unclear"
         # Kikuchi line 유무 (메인 클래스와 별도): 아래 셋 중 하나면 "있음"
         has_kikuchi = ((0.75 < p_streak < 0.917 and 0.0591 < p_mixed <= 0.2 and p_spotty < 0.066)
-                       or (0.55 < p_streak < 0.56 and 0.25 < p_mixed < 0.2995 and 0.143 < p_spotty < 0.18)
+                       or (0.55 < p_streak < 0.56 and 0.25 < p_mixed < 0.2995 and 0.142 < p_spotty < 0.18)
                        or (0.954 < p_streak < 0.956 and 0.0298 < p_mixed < 0.03 and 0.0151 < p_spotty < 0.0153))
         kikuchi = "Yes kikuchi line" if has_kikuchi else "No kikuchi line"
         st.subheader(label)
