@@ -46,11 +46,12 @@ with st.sidebar:
     st.divider()
     st.subheader("Decision rule")
     st.markdown(
-        "1. **Streaks** — Streaks > 0.8906, or (Streaks ≥ 0.8147, Mixed ≤ 0.1423, Spotty ≤ 0.043)\n"
-        "2. **Mixed · Streak-dominant** — Streaks ≥ 0.75, Mixed ≥ 0.0893, Spotty ≤ 0.069\n"
-        "3. **Mixed · Spotty-dominant** — Streaks ≤ 0.7191, Mixed ≥ 0.1827, Spotty > 0.048\n"
-        "4. **Spotty** — Spotty ≥ 0.55\n"
-        "5. **Unclear** — none of the above"
+        "1. **Streaks** — Streaks > 0.8906\n"
+        "2. **Streaks with kikuchi line** — 0.75 < Streaks < 0.85, 0.1 ≤ Mixed ≤ 0.15, Spotty ≤ 0.05\n"
+        "3. **Mixed · Streak-dominant** — Streaks ≥ 0.75, Mixed ≥ 0.0893, Spotty ≤ 0.069\n"
+        "4. **Mixed · Spotty-dominant** — Streaks ≤ 0.7191, Mixed ≥ 0.1827, Spotty > 0.048\n"
+        "5. **Spotty** — Spotty ≥ 0.55\n"
+        "6. **Unclear** — none of the above"
     )
     st.divider()
     st.markdown("📧 [rlacksdud97531@gmail.com](mailto:rlacksdud97531@gmail.com)")
@@ -100,13 +101,16 @@ with tab_cls:
         p_spotty = probs.get('Spotty', 0.0)
         p_mixed  = probs.get('Mixed', 0.0)
         # 결정 규칙 (데이터 기반 경계):
-        #  1) Streaks                  : Streaks > 0.8906  OR  (Streaks >= 0.8147, Mixed <= 0.1423, Spotty <= 0.043)
-        #  2) Mixed · Streak-dominant  : Streaks >= 0.75,   Mixed >= 0.0893, Spotty <= 0.069
-        #  3) Mixed · Spotty-dominant  : Streaks <= 0.7191, Mixed >= 0.1827, Spotty > 0.048
-        #  4) Spotty                   : Spotty  >= 0.55
-        #  5) 넷 다 아니면 Unclear
-        if p_streak > 0.8906 or (p_streak >= 0.8147 and p_mixed <= 0.1423 and p_spotty <= 0.043):
+        #  1) Streaks                    : Streaks > 0.8906
+        #  2) Streaks with kikuchi line  : 0.75 < Streaks < 0.85, 0.1 <= Mixed <= 0.15, Spotty <= 0.05
+        #  3) Mixed · Streak-dominant    : Streaks >= 0.75,   Mixed >= 0.0893, Spotty <= 0.069
+        #  4) Mixed · Spotty-dominant    : Streaks <= 0.7191, Mixed >= 0.1827, Spotty > 0.048
+        #  5) Spotty                     : Spotty  >= 0.55
+        #  6) 어느 것도 아니면 Unclear
+        if p_streak > 0.8906:
             label = "Streaks"
+        elif 0.75 < p_streak < 0.85 and 0.1 <= p_mixed <= 0.15 and p_spotty <= 0.05:
+            label = "Streaks with kikuchi line"
         elif p_streak >= 0.75 and p_mixed >= 0.0893 and p_spotty <= 0.069:
             label = "Mixed · Streak-dominant"
         elif p_streak <= 0.7191 and p_mixed >= 0.1827 and p_spotty > 0.048:
