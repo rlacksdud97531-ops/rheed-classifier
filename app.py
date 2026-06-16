@@ -46,10 +46,10 @@ with st.sidebar:
     st.divider()
     st.subheader("Decision rule")
     st.markdown(
-        "1. **Mixed · Streak-dominant** — Streaks ≥ 0.75, Mixed > 0.103, Spotty ≤ 0.069\n"
+        "1. **Mixed · Streak-dominant** — Streaks ≥ 0.75, Mixed > 0.1044, Spotty ≤ 0.069\n"
         "2. **Mixed · Spotty-dominant** — Streaks ≤ 0.7191, Mixed ≥ 0.1827, Spotty > 0.048\n"
         "3. **Spotty** — Spotty ≥ 0.55\n"
-        "4. **Streaks** — Streaks > 0.8692\n"
+        "4. **Streaks** — Streaks > 0.8312\n"
         "5. **Unclear** — none of the above"
     )
     st.divider()
@@ -109,18 +109,18 @@ with tab_cls:
         p_spotty = probs.get('Spotty', 0.0)
         p_mixed  = probs.get('Mixed', 0.0)
         # 클래스 결정 규칙 (데이터 기반 경계):
-        #  1) Mixed · Streak-dominant : Streaks >= 0.75,   Mixed > 0.103,   Spotty <= 0.069
+        #  1) Mixed · Streak-dominant : Streaks >= 0.75,   Mixed > 0.1044,  Spotty <= 0.069
         #  2) Mixed · Spotty-dominant : Streaks <= 0.7191, Mixed >= 0.1827, Spotty > 0.048
         #  3) Spotty                  : Spotty  >= 0.55
-        #  4) Streaks                 : Streaks > 0.8692
+        #  4) Streaks                 : Streaks > 0.8312
         #  5) 어느 것도 아니면 Unclear
-        if p_streak >= 0.75 and p_mixed > 0.103 and p_spotty <= 0.069:
+        if p_streak >= 0.75 and p_mixed > 0.1044 and p_spotty <= 0.069:
             label = "Mixed · Streak-dominant"
         elif p_streak <= 0.7191 and p_mixed >= 0.1827 and p_spotty > 0.048:
             label = "Mixed · Spotty-dominant"
         elif p_spotty >= 0.55:
             label = "Spotty"
-        elif p_streak > 0.8692:
+        elif p_streak > 0.8312:
             label = "Streaks"
         else:
             label = "Unclear"
