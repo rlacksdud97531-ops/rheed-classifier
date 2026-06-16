@@ -46,9 +46,9 @@ with st.sidebar:
     st.divider()
     st.subheader("Decision rule")
     st.markdown(
-        "1. **Mixed · Streak-dominant** — Streaks ≥ 0.75, Mixed ≥ 0.0893, Spotty ≤ 0.069\n"
-        "2. **Mixed · Spotty-dominant** — Streaks ≤ 0.7191, Mixed ≥ 0.1827, Spotty > 0.048\n"
-        "3. **Streaks** — Streaks > 0.8906, or (Streaks ≥ 0.8147, Mixed ≤ 0.1423, Spotty ≤ 0.043)\n"
+        "1. **Streaks** — Streaks > 0.8906, or (Streaks ≥ 0.8147, Mixed ≤ 0.1423, Spotty ≤ 0.043)\n"
+        "2. **Mixed · Streak-dominant** — Streaks ≥ 0.75, Mixed ≥ 0.0893, Spotty ≤ 0.069\n"
+        "3. **Mixed · Spotty-dominant** — Streaks ≤ 0.7191, Mixed ≥ 0.1827, Spotty > 0.048\n"
         "4. **Spotty** — Spotty ≥ 0.55\n"
         "5. **Unclear** — none of the above"
     )
@@ -100,17 +100,17 @@ with tab_cls:
         p_spotty = probs.get('Spotty', 0.0)
         p_mixed  = probs.get('Mixed', 0.0)
         # 결정 규칙 (데이터 기반 경계):
-        #  1) Mixed · Streak-dominant  : Streaks >= 0.75,   Mixed >= 0.0893, Spotty <= 0.069
-        #  2) Mixed · Spotty-dominant  : Streaks <= 0.7191, Mixed >= 0.1827, Spotty > 0.048
-        #  3) Streaks                  : Streaks > 0.8906  OR  (Streaks >= 0.8147, Mixed <= 0.1423, Spotty <= 0.043)
+        #  1) Streaks                  : Streaks > 0.8906  OR  (Streaks >= 0.8147, Mixed <= 0.1423, Spotty <= 0.043)
+        #  2) Mixed · Streak-dominant  : Streaks >= 0.75,   Mixed >= 0.0893, Spotty <= 0.069
+        #  3) Mixed · Spotty-dominant  : Streaks <= 0.7191, Mixed >= 0.1827, Spotty > 0.048
         #  4) Spotty                   : Spotty  >= 0.55
         #  5) 넷 다 아니면 Unclear
-        if p_streak >= 0.75 and p_mixed >= 0.0893 and p_spotty <= 0.069:
+        if p_streak > 0.8906 or (p_streak >= 0.8147 and p_mixed <= 0.1423 and p_spotty <= 0.043):
+            label = "Streaks"
+        elif p_streak >= 0.75 and p_mixed >= 0.0893 and p_spotty <= 0.069:
             label = "Mixed · Streak-dominant"
         elif p_streak <= 0.7191 and p_mixed >= 0.1827 and p_spotty > 0.048:
             label = "Mixed · Spotty-dominant"
-        elif p_streak > 0.8906 or (p_streak >= 0.8147 and p_mixed <= 0.1423 and p_spotty <= 0.043):
-            label = "Streaks"
         elif p_spotty >= 0.55:
             label = "Spotty"
         else:
