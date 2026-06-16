@@ -76,8 +76,8 @@ except Exception as ex:
 tab_cls, tab_peak = st.tabs(["🔬 Classification", "🎯 Center peak"])
 
 with tab_cls:
-    # V2 줌 크롭 (center=True: 박스를 가로 정중앙에 배치)
-    t, b, l, r = RC.zoom_box(img, center=True)
+    # V2 줌 크롭 (band_h=0.60: 전체 패턴을 담아야 Mixed/Spotty 증거가 살아있음)
+    t, b, l, r = RC.zoom_box(img)
     fed = img[t:b, l:r]
 
     # 원본에 V2 줌 박스(빨강) 표시

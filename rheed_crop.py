@@ -86,10 +86,9 @@ def crop_pattern(img, **kw):
     return np.asarray(img)[t:b, l:r]
 
 
-def zoom_box(img, band_h=0.60, width_frac=0.72, center=False, **kw):
+def zoom_box(img, band_h=0.60, width_frac=0.72, **kw):
     """V2 줌 영역 좌표 -> (top, bottom, left, right). 패턴 박스 안 '상단-중앙 밴드'(image2처럼).
-       수직 = shadow edge 직하부터 band_h 비율, 수평 = 밝은 열(줄무늬)의 무게중심 ± width_frac/2.
-       center=True면 무게중심 대신 패턴 박스의 가로 정중앙을 쓴다."""
+       수직 = shadow edge 직하부터 band_h 비율, 수평 = 밝은 열(줄무늬)의 무게중심 ± width_frac/2."""
     a = np.asarray(img)
     t, b, l, r = pattern_box(a, **kw)
     g = (a[..., 1] if a.ndim == 3 else a)[t:b, l:r].astype(np.float32)
@@ -97,12 +96,9 @@ def zoom_box(img, band_h=0.60, width_frac=0.72, center=False, **kw):
     if ph < 5 or pw < 5:
         return t, b, l, r
     y1 = t + max(1, int(band_h * ph))                       # 수직 밴드 (상단부)
-    if center:
-        cx = pw // 2                                        # 가로 정중앙
-    else:
-        col = g[:max(1, int(0.6 * ph))].mean(axis=0)        # 상단부 열별 밝기 = 줄무늬 위치
-        w = np.clip(col - np.percentile(col, 20), 0, None)
-        cx = int((np.arange(pw) * w).sum() / w.sum()) if w.sum() > 0 else pw // 2  # 밝기 무게중심
+    col = g[:max(1, int(0.6 * ph))].mean(axis=0)            # 상단부 열별 밝기 = 줄무늬 위치
+    w = np.clip(col - np.percentile(col, 20), 0, None)
+    cx = int((np.arange(pw) * w).sum() / w.sum()) if w.sum() > 0 else pw // 2  # 밝기 무게중심
     half = int(width_frac * pw / 2)
     x0, x1 = max(0, cx - half), min(pw, cx + half)
     return t, y1, l + x0, l + x1
