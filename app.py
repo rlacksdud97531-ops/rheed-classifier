@@ -46,14 +46,20 @@ with st.sidebar:
     st.divider()
     st.subheader("Decision rule")
     st.markdown(
-        "1. **Streaks with kikuchi line** — (0.75 < Streaks < 0.917, 0.0591 < Mixed ≤ 0.2, Spotty < 0.066) "
-        "or (0.55 < Streaks < 0.56, 0.25 < Mixed < 0.27, 0.16 < Spotty < 0.18) "
-        "or (0.954 < Streaks < 0.956, 0.0298 < Mixed < 0.03, 0.0151 < Spotty < 0.0153)\n"
-        "2. **Mixed · Streak-dominant** — Streaks ≥ 0.75, Mixed ≥ 0.0893, Spotty ≤ 0.069\n"
-        "3. **Mixed · Spotty-dominant** — Streaks ≤ 0.7191, Mixed ≥ 0.1827, Spotty > 0.048\n"
-        "4. **Spotty** — Spotty ≥ 0.55\n"
-        "5. **Streaks** — Streaks > 0.8952\n"
-        "6. **Unclear** — none of the above"
+        "1. **Mixed · Streak-dominant** — Streaks ≥ 0.75, Mixed ≥ 0.0893, Spotty ≤ 0.069\n"
+        "2. **Mixed · Spotty-dominant** — Streaks ≤ 0.7191, Mixed ≥ 0.1827, Spotty > 0.048\n"
+        "3. **Spotty** — Spotty ≥ 0.55\n"
+        "4. **Streaks** — Streaks > 0.8952\n"
+        "5. **Unclear** — none of the above"
+    )
+    st.divider()
+    st.subheader("Kikuchi line")
+    st.markdown(
+        "**Yes kikuchi line** if any of:\n"
+        "- 0.75 < Streaks < 0.917, 0.0591 < Mixed ≤ 0.2, Spotty < 0.066\n"
+        "- 0.55 < Streaks < 0.56, 0.25 < Mixed < 0.27, 0.16 < Spotty < 0.18\n"
+        "- 0.954 < Streaks < 0.956, 0.0298 < Mixed < 0.03, 0.0151 < Spotty < 0.0153\n\n"
+        "otherwise **No kikuchi line**"
     )
     st.divider()
     st.markdown("📧 [rlacksdud97531@gmail.com](mailto:rlacksdud97531@gmail.com)")
@@ -102,20 +108,13 @@ with tab_cls:
         p_streak = probs.get('Streaks', 0.0)
         p_spotty = probs.get('Spotty', 0.0)
         p_mixed  = probs.get('Mixed', 0.0)
-        # 결정 규칙 (데이터 기반 경계):
-        #  1) Streaks with kikuchi line  : (0.75 < Streaks < 0.917, 0.0591 < Mixed <= 0.2, Spotty < 0.066)
-        #                                   OR (0.55 < Streaks < 0.56, 0.25 < Mixed < 0.27, 0.16 < Spotty < 0.18)
-        #                                   OR (0.954 < Streaks < 0.956, 0.0298 < Mixed < 0.03, 0.0151 < Spotty < 0.0153)
-        #  2) Mixed · Streak-dominant    : Streaks >= 0.75,   Mixed >= 0.0893, Spotty <= 0.069
-        #  3) Mixed · Spotty-dominant    : Streaks <= 0.7191, Mixed >= 0.1827, Spotty > 0.048
-        #  4) Spotty                     : Spotty  >= 0.55
-        #  5) Streaks                    : Streaks > 0.8952
-        #  6) 어느 것도 아니면 Unclear
-        if ((0.75 < p_streak < 0.917 and 0.0591 < p_mixed <= 0.2 and p_spotty < 0.066)
-                or (0.55 < p_streak < 0.56 and 0.25 < p_mixed < 0.27 and 0.16 < p_spotty < 0.18)
-                or (0.954 < p_streak < 0.956 and 0.0298 < p_mixed < 0.03 and 0.0151 < p_spotty < 0.0153)):
-            label = "Streaks with kikuchi line"
-        elif p_streak >= 0.75 and p_mixed >= 0.0893 and p_spotty <= 0.069:
+        # 클래스 결정 규칙 (데이터 기반 경계):
+        #  1) Mixed · Streak-dominant : Streaks >= 0.75,   Mixed >= 0.0893, Spotty <= 0.069
+        #  2) Mixed · Spotty-dominant : Streaks <= 0.7191, Mixed >= 0.1827, Spotty > 0.048
+        #  3) Spotty                  : Spotty  >= 0.55
+        #  4) Streaks                 : Streaks > 0.8952
+        #  5) 어느 것도 아니면 Unclear
+        if p_streak >= 0.75 and p_mixed >= 0.0893 and p_spotty <= 0.069:
             label = "Mixed · Streak-dominant"
         elif p_streak <= 0.7191 and p_mixed >= 0.1827 and p_spotty > 0.048:
             label = "Mixed · Spotty-dominant"
@@ -125,7 +124,13 @@ with tab_cls:
             label = "Streaks"
         else:
             label = "Unclear"
+        # Kikuchi line 유무 (메인 클래스와 별도): 아래 셋 중 하나면 "있음"
+        has_kikuchi = ((0.75 < p_streak < 0.917 and 0.0591 < p_mixed <= 0.2 and p_spotty < 0.066)
+                       or (0.55 < p_streak < 0.56 and 0.25 < p_mixed < 0.27 and 0.16 < p_spotty < 0.18)
+                       or (0.954 < p_streak < 0.956 and 0.0298 < p_mixed < 0.03 and 0.0151 < p_spotty < 0.0153))
+        kikuchi = "Yes kikuchi line" if has_kikuchi else "No kikuchi line"
         st.subheader(label)
+        st.markdown(f"**{kikuchi}**")
         st.markdown("**Class probabilities**")
         st.bar_chart(pd.DataFrame({'확률': probs}))
 
