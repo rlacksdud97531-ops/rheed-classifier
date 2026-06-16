@@ -46,7 +46,7 @@ with st.sidebar:
     st.divider()
     st.subheader("Decision rule")
     st.markdown(
-        "1. **Streaks with kikuchi line** — (0.75 < Streaks < 0.917, 0.0677 < Mixed ≤ 0.2, Spotty ≤ 0.66) "
+        "1. **Streaks with kikuchi line** — (0.75 < Streaks < 0.917, 0.0591 < Mixed ≤ 0.2, Spotty < 0.066) "
         "or (0.55 < Streaks < 0.56, 0.25 < Mixed < 0.27, 0.16 < Spotty < 0.18) "
         "or (0.954 < Streaks < 0.956, 0.0298 < Mixed < 0.03, 0.0151 < Spotty < 0.0153)\n"
         "2. **Mixed · Streak-dominant** — Streaks ≥ 0.75, Mixed ≥ 0.0893, Spotty ≤ 0.069\n"
@@ -103,7 +103,7 @@ with tab_cls:
         p_spotty = probs.get('Spotty', 0.0)
         p_mixed  = probs.get('Mixed', 0.0)
         # 결정 규칙 (데이터 기반 경계):
-        #  1) Streaks with kikuchi line  : (0.75 < Streaks < 0.917, 0.0677 < Mixed <= 0.2, Spotty <= 0.66)
+        #  1) Streaks with kikuchi line  : (0.75 < Streaks < 0.917, 0.0591 < Mixed <= 0.2, Spotty < 0.066)
         #                                   OR (0.55 < Streaks < 0.56, 0.25 < Mixed < 0.27, 0.16 < Spotty < 0.18)
         #                                   OR (0.954 < Streaks < 0.956, 0.0298 < Mixed < 0.03, 0.0151 < Spotty < 0.0153)
         #  2) Mixed · Streak-dominant    : Streaks >= 0.75,   Mixed >= 0.0893, Spotty <= 0.069
@@ -111,7 +111,7 @@ with tab_cls:
         #  4) Spotty                     : Spotty  >= 0.55
         #  5) Streaks                    : Streaks > 0.8952
         #  6) 어느 것도 아니면 Unclear
-        if ((0.75 < p_streak < 0.917 and 0.0677 < p_mixed <= 0.2 and p_spotty <= 0.66)
+        if ((0.75 < p_streak < 0.917 and 0.0591 < p_mixed <= 0.2 and p_spotty < 0.066)
                 or (0.55 < p_streak < 0.56 and 0.25 < p_mixed < 0.27 and 0.16 < p_spotty < 0.18)
                 or (0.954 < p_streak < 0.956 and 0.0298 < p_mixed < 0.03 and 0.0151 < p_spotty < 0.0153)):
             label = "Streaks with kikuchi line"
