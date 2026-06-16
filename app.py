@@ -51,7 +51,7 @@ with st.sidebar:
         "2. **Mixed · Streak-dominant** — Streaks ≥ 0.75, Mixed ≥ 0.0893, Spotty ≤ 0.069\n"
         "3. **Mixed · Spotty-dominant** — Streaks ≤ 0.7191, Mixed ≥ 0.1827, Spotty > 0.048\n"
         "4. **Spotty** — Spotty ≥ 0.55\n"
-        "5. **Streaks** — Streaks > 0.8906\n"
+        "5. **Streaks** — Streaks > 0.9\n"
         "6. **Unclear** — none of the above"
     )
     st.divider()
@@ -107,7 +107,7 @@ with tab_cls:
         #  2) Mixed · Streak-dominant    : Streaks >= 0.75,   Mixed >= 0.0893, Spotty <= 0.069
         #  3) Mixed · Spotty-dominant    : Streaks <= 0.7191, Mixed >= 0.1827, Spotty > 0.048
         #  4) Spotty                     : Spotty  >= 0.55
-        #  5) Streaks                    : Streaks > 0.8906
+        #  5) Streaks                    : Streaks > 0.9
         #  6) 어느 것도 아니면 Unclear
         if ((0.75 < p_streak < 0.917 and 0.0677 < p_mixed <= 0.2 and p_spotty <= 0.05)
                 or (0.55 < p_streak < 0.56 and 0.25 < p_mixed < 0.27 and 0.16 < p_spotty < 0.18)):
@@ -118,7 +118,7 @@ with tab_cls:
             label = "Mixed · Spotty-dominant"
         elif p_spotty >= 0.55:
             label = "Spotty"
-        elif p_streak > 0.8906:
+        elif p_streak > 0.9:
             label = "Streaks"
         else:
             label = "Unclear"
